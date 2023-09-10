@@ -100,12 +100,14 @@ public class DiffTool {
         Field id = getIdField(obj);
         id.setAccessible(true);
         Object value = id.get(obj);
+        // find all the old nested items which are also the current list
         Object match =
             currentList.stream()
                 .filter(o -> assertIds(o, id.getName(), value))
                 .findFirst()
                 .orElse(null);
 
+        // check and process if nested items were updated
         if (match != null) {
           changes = diff(obj, match);
           changes.stream()
@@ -122,6 +124,7 @@ public class DiffTool {
       added = generateListDifference(currentList, matched);
 
     } else {
+      // if lists don't have nested elements compute only the differences
       added = generateListDifference(currentList, previousList);
       removed = generateListDifference(previousList, currentList);
     }
