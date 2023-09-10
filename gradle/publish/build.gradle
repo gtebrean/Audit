@@ -1,0 +1,54 @@
+apply plugin: 'maven-publish'
+
+task javadocsJar(type: Jar) {
+    archiveClassifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task testsJar(type: Jar) {
+    archiveClassifier = 'tests'
+    from sourceSets.test.output
+}
+
+javadoc { options.encoding = 'UTF-8' }
+
+artifacts { archives sourcesJar, javadocsJar, testsJar }
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar
+            artifact javadocsJar
+            artifact testsJar
+
+            pom {
+                name = project.name
+                description.set(project.provider({ project.description }))
+                url = 'https://com.audit.io'
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+
+                developers {
+                    developer {
+                        id = 'gtebrean'
+                        name = 'George Tebrean'
+                    }
+                }
+            }
+        }
+    }
+}
+
